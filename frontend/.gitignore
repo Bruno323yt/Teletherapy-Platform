@@ -25,3 +25,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# IDEs y OS
+.vscode/
+.idea/
+.DS_Store
+
+# Coverage (si usas Jest/Testing Library)
+coverage/
+
+# Logs de husky o lint-staged
+*.huskyrc
