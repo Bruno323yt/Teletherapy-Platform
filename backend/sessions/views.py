@@ -165,3 +165,25 @@ def therapist_availability(request, therapist_id):
                 current_time += timedelta(hours=1)
     
     return Response({'available_slots': available_slots})
+
+class PatientSessionsView(generics.ListAPIView):
+    """View específica para obtener sesiones de un paciente"""
+    serializer_class = SessionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.role != 'paciente':
+            return Session.objects.none()
+        return Session.objects.filter(patient__user=user).order_by('-scheduled_time')
+
+class TherapistSessionsView(generics.ListAPIView):
+    """View específica para obtener sesiones de un terapeuta"""
+    serializer_class = SessionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.role != 'terapeuta':
+            return Session.objects.none()
+        return Session.objects.filter(therapist__user=user).order_by('-scheduled_time')

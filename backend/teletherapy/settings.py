@@ -12,7 +12,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-producti
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '192.168.100.129', '*']
 
 # Application definition
 DJANGO_APPS = [
@@ -26,6 +26,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'drf_yasg',
 ]
@@ -72,14 +73,22 @@ WSGI_APPLICATION = 'teletherapy.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB', default='teletherapy_db'),
-        'USER': config('POSTGRES_USER', default='postgres'),
-        'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': config('POSTGRES_HOST', default='db'),
-        'PORT': config('POSTGRES_PORT', default='5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Para producción, usar PostgreSQL:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('POSTGRES_DB', default='teletherapy_db'),
+#         'USER': config('POSTGRES_USER', default='postgres'),
+#         'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
+#         'HOST': config('POSTGRES_HOST', default='localhost'),
+#         'PORT': config('POSTGRES_PORT', default='5432'),
+#     }
+# }
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
@@ -133,15 +142,33 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
 }
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    "http://localhost:3000",      # Next.js
+    "http://127.0.0.1:3000",     
+    "http://localhost:5173",      # Vite React
+    "http://127.0.0.1:5173",     
+    "http://localhost:19006",     # Expo web
+    "http://127.0.0.1:19006",
+    "http://localhost:8081",      # Expo development server
+    "http://127.0.0.1:8081",
+    "http://192.168.100.129:3000", # Next.js en IP local
+    "http://192.168.100.129:5173", # Vite en IP local
+    "http://192.168.100.129:19006", # Expo en IP local
+    "http://192.168.100.129:8081", # Expo dev en IP local
 ]
+
+# Para desarrollo mobile, necesitamos permitir más orígenes
+if DEBUG:
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^http://192\.168\.\d+\.\d+:\d+$",      # Cualquier IP local con cualquier puerto
+        r"^http://10\.\d+\.\d+\.\d+:\d+$",       # Redes privadas
+        r"^http://172\.\d+\.\d+\.\d+:\d+$",      # Redes Docker
+    ]
 
 CORS_ALLOW_CREDENTIALS = True
 

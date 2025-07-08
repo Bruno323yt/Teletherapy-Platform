@@ -106,3 +106,17 @@ class TherapistProfileView(generics.RetrieveUpdateAPIView):
             }
         )
         return therapist
+
+@api_view(['POST'])
+def logout_view(request):
+    """
+    Logout view - invalida el refresh token
+    """
+    try:
+        refresh_token = request.data.get('refresh')
+        if refresh_token:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        return Response({'message': 'Sesión cerrada exitosamente'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'message': 'Error al cerrar sesión'}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,0 +1,17 @@
+{
+  "name": "teletherapy-shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^22.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
